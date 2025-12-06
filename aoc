@@ -1,0 +1,385 @@
+#!/usr/bin/env bash
+
+# Advent of Code Project Scaffolding Script
+# Generates directory structure and starter files for new AoC challenges
+
+set -e
+
+# Colors for output
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Default values
+CURRENT_YEAR=$(date +%Y)
+CURRENT_DAY=$(date +%d | sed 's/^0*//')  # Remove leading zeros
+YEAR=$CURRENT_YEAR
+DAY=$CURRENT_DAY
+LANGUAGES=("python")
+ROOT_DIR="."
+
+# Function to show usage
+usage() {
+    cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Scaffold new Advent of Code challenge files
+
+OPTIONS:
+    -y, --year YEAR         Year (default: $CURRENT_YEAR)
+    -d, --day DAY           Day 1-25 (default: $CURRENT_DAY)
+    -l, --languages LANGS   Space-separated languages (default: python)
+                           Available: go, typescript, python, rust
+    -r, --root DIR          Root directory (default: current directory)
+    -h, --help             Show this help message
+
+EXAMPLES:
+    $(basename "$0")                           # Create today's challenge
+    $(basename "$0") -d 5                      # Create day 5 of current year
+    $(basename "$0") -y 2024 -d 12             # Create day 12 of 2024
+    $(basename "$0") -d 3 -l "go python"       # Create day 3 with only Go and Python
+EOF
+    exit 0
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -y|--year)
+            YEAR="$2"
+            shift 2
+            ;;
+        -d|--day)
+            DAY="$2"
+            shift 2
+            ;;
+        -l|--languages)
+            IFS=' ' read -ra LANGUAGES <<< "$2"
+            shift 2
+            ;;
+        -r|--root)
+            ROOT_DIR="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            ;;
+        *)
+            echo "Unknown option: $1"
+            usage
+            ;;
+    esac
+done
+
+# Validate day
+if [[ $DAY -lt 1 || $DAY -gt 25 ]]; then
+    echo "Error: Day must be between 1 and 25"
+    exit 1
+fi
+
+# Format day with leading zero
+DAY_FORMATTED=$(printf "%02d" "$DAY")
+DAY_DIR="$ROOT_DIR/$YEAR/day$DAY_FORMATTED"
+
+# Create day directory
+mkdir -p "$DAY_DIR"
+
+# Create input.txt
+if [[ ! -f "$DAY_DIR/input.txt" ]]; then
+    echo "# Paste your input here" > "$DAY_DIR/input.txt"
+    echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/input.txt"
+fi
+
+# Create README.md
+if [[ ! -f "$DAY_DIR/README.md" ]]; then
+    cat > "$DAY_DIR/README.md" << EOF
+# Day $DAY: [Problem Title]
+
+[Problem URL](https://adventofcode.com/$YEAR/day/$DAY)
+
+## Solutions
+
+EOF
+    for lang in "${LANGUAGES[@]}"; do
+        # Capitalize first letter
+        lang_cap="$(tr '[:lower:]' '[:upper:]' <<< ${lang:0:1})${lang:1}"
+        echo "- [$lang_cap](./$lang/)" >> "$DAY_DIR/README.md"
+    done
+    cat >> "$DAY_DIR/README.md" << EOF
+
+## Notes
+
+- Part 1: 
+- Part 2: 
+EOF
+    echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/README.md"
+fi
+
+# Function to create Go files
+create_go() {
+    local lang_dir="$1"
+    mkdir -p "$lang_dir"
+    
+    if [[ ! -f "$lang_dir/main.go" ]]; then
+        cat > "$lang_dir/main.go" << 'EOF'
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+)
+
+func readInput(filename string) string {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	return strings.TrimSpace(string(data))
+}
+
+func part1(input string) int {
+	// TODO: Implement part 1
+	return 0
+}
+
+func part2(input string) int {
+	// TODO: Implement part 2
+	return 0
+}
+
+func main() {
+	input := readInput("../input.txt")
+	
+	fmt.Println("Part 1:", part1(input))
+	fmt.Println("Part 2:", part2(input))
+}
+EOF
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/go/main.go"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/go/main.go (already exists)"
+    fi
+    
+    if [[ ! -f "$lang_dir/main_test.go" ]]; then
+        cat > "$lang_dir/main_test.go" << 'EOF'
+package main
+
+import "testing"
+
+const testInput = ``
+
+func TestPart1(t *testing.T) {
+	result := part1(testInput)
+	expected := 0
+	if result != expected {
+		t.Errorf("Part 1: expected %d, got %d", expected, result)
+	}
+}
+
+func TestPart2(t *testing.T) {
+	result := part2(testInput)
+	expected := 0
+	if result != expected {
+		t.Errorf("Part 2: expected %d, got %d", expected, result)
+	}
+}
+EOF
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/go/main_test.go"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/go/main_test.go (already exists)"
+    fi
+}
+
+# Function to create TypeScript files
+create_typescript() {
+    local lang_dir="$1"
+    mkdir -p "$lang_dir"
+    
+    if [[ ! -f "$lang_dir/solution.ts" ]]; then
+        cat > "$lang_dir/solution.ts" << 'EOF'
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
+function readInput(): string {
+    return readFileSync(join(__dirname, '../input.txt'), 'utf-8').trim();
+}
+
+function part1(input: string): number {
+    // TODO: Implement part 1
+    return 0;
+}
+
+function part2(input: string): number {
+    // TODO: Implement part 2
+    return 0;
+}
+
+if (require.main === module) {
+    const input = readInput();
+    console.log('Part 1:', part1(input));
+    console.log('Part 2:', part2(input));
+}
+
+export { part1, part2 };
+EOF
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/typescript/solution.ts"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/typescript/solution.ts (already exists)"
+    fi
+    
+    if [[ ! -f "$lang_dir/solution.test.ts" ]]; then
+        cat > "$lang_dir/solution.test.ts" << 'EOF'
+import { part1, part2 } from './solution';
+
+const testInput = ``;
+
+describe('Day X', () => {
+    test('Part 1', () => {
+        expect(part1(testInput)).toBe(0);
+    });
+
+    test('Part 2', () => {
+        expect(part2(testInput)).toBe(0);
+    });
+});
+EOF
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/typescript/solution.test.ts"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/typescript/solution.test.ts (already exists)"
+    fi
+}
+
+# Function to create Python files
+create_python() {
+    local lang_dir="$1"
+    mkdir -p "$lang_dir"
+    
+    if [[ ! -f "$lang_dir/solution.py" ]]; then
+        cat > "$lang_dir/solution.py" << 'EOF'
+#!/usr/bin/env python3
+"""Advent of Code - Day X"""
+
+from pathlib import Path
+
+def read_input():
+    return Path(__file__).parent.parent.joinpath('input.txt').read_text().strip()
+
+def part1(data: str) -> int:
+    """Solve part 1"""
+    # TODO: Implement part 1
+    return 0
+
+def part2(data: str) -> int:
+    """Solve part 2"""
+    # TODO: Implement part 2
+    return 0
+
+if __name__ == '__main__':
+    input_data = read_input()
+    print(f"Part 1: {part1(input_data)}")
+    print(f"Part 2: {part2(input_data)}")
+EOF
+        chmod +x "$lang_dir/solution.py"
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/python/solution.py"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/python/solution.py (already exists)"
+    fi
+    
+    if [[ ! -f "$lang_dir/test_solution.py" ]]; then
+        cat > "$lang_dir/test_solution.py" << 'EOF'
+import pytest
+from solution import part1, part2
+
+TEST_INPUT = """"""
+
+def test_part1():
+    assert part1(TEST_INPUT) == 0
+
+def test_part2():
+    assert part2(TEST_INPUT) == 0
+EOF
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/python/test_solution.py"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/python/test_solution.py (already exists)"
+    fi
+}
+
+# Function to create Rust files
+create_rust() {
+    local lang_dir="$1"
+    mkdir -p "$lang_dir"
+    
+    if [[ ! -f "$lang_dir/solution.rs" ]]; then
+        cat > "$lang_dir/solution.rs" << 'EOF'
+use std::fs;
+
+fn read_input() -> String {
+    fs::read_to_string("../input.txt")
+        .expect("Failed to read input file")
+        .trim()
+        .to_string()
+}
+
+fn part1(input: &str) -> i32 {
+    // TODO: Implement part 1
+    0
+}
+
+fn part2(input: &str) -> i32 {
+    // TODO: Implement part 2
+    0
+}
+
+fn main() {
+    let input = read_input();
+    println!("Part 1: {}", part1(&input));
+    println!("Part 2: {}", part2(&input));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const TEST_INPUT: &str = "";
+
+    #[test]
+    fn test_part1() {
+        assert_eq!(part1(TEST_INPUT), 0);
+    }
+
+    #[test]
+    fn test_part2() {
+        assert_eq!(part2(TEST_INPUT), 0);
+    }
+}
+EOF
+        echo -e "${GREEN}✓${NC} Created $YEAR/day$DAY_FORMATTED/rust/solution.rs"
+    else
+        echo -e "${YELLOW}⊘${NC} Skipped $YEAR/day$DAY_FORMATTED/rust/solution.rs (already exists)"
+    fi
+}
+
+# Create files for each language
+for lang in "${LANGUAGES[@]}"; do
+    case $lang in
+        go)
+            create_go "$DAY_DIR/go"
+            ;;
+        typescript)
+            create_typescript "$DAY_DIR/typescript"
+            ;;
+        python)
+            create_python "$DAY_DIR/python"
+            ;;
+        rust)
+            create_rust "$DAY_DIR/rust"
+            ;;
+        *)
+            echo "Warning: Unknown language '$lang', skipping..."
+            ;;
+    esac
+done
+
+echo ""
+echo -e "${GREEN}✨ Day $DAY of $YEAR scaffolded successfully!${NC}"
+echo "Location: $DAY_DIR"
