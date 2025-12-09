@@ -61,8 +61,35 @@ func part1(input string) int {
 }
 
 func part2(input string) int {
-	// TODO: Implement part 2
-	return 0
+	result := 0
+	arrOfStr := strings.Split(input, "\n")
+	var arr [][]string
+	for _, row := range arrOfStr {
+		arr = append(arr, strings.Split(row, ""))
+	}
+	breakLoop := false
+	for !breakLoop {
+		breakLoop = true
+		for i, row := range arr {
+			for j, roll := range row {
+				if roll == "@" {
+					adjacentRollCount := 0
+					adjacentRolls := getAdjacentRollsPosition(i, j, len(arr), len(row))
+					for _, adjacentRoll := range adjacentRolls {
+						if arr[adjacentRoll.x][adjacentRoll.y] == "@" {
+							adjacentRollCount++
+						}
+					}
+					if adjacentRollCount < 4 {
+						result++
+						arr[i][j] = "."
+						breakLoop = false
+					}
+				}
+			}
+		}
+	}
+	return result
 }
 
 func main() {

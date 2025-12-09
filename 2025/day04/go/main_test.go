@@ -23,7 +23,7 @@ func TestPart1(t *testing.T) {
 
 func TestPart2(t *testing.T) {
 	result := part2(testInput)
-	expected := 0
+	expected := 43
 	if result != expected {
 		t.Errorf("Part 2: expected %d, got %d", expected, result)
 	}
