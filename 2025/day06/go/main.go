@@ -12,7 +12,7 @@ func readInput(filename string) string {
 	if err != nil {
 		panic(err)
 	}
-	return strings.TrimSpace(string(data))
+	return string(data)
 }
 
 func part1(input string) int {
@@ -72,9 +72,52 @@ func part1(input string) int {
 	return result
 }
 
+func isOperator(character rune) bool {
+	return character == '+' || character == '*'
+}
+
 func part2(input string) int {
-	// TODO: Implement part 2
-	return 0
+	result := 0
+	arr := strings.Split(strings.TrimRight(input, "\n"), "\n")
+
+	column := []string{}
+	for i := (len(arr[0]) - 1); i >= 0; i-- {
+		temp := ""
+		for j := range arr {
+			character := arr[j][i]
+			if isOperator(rune(character)) {
+				column = append(column, temp)
+				temp = ""
+				sum := 0
+				product := 1
+				for _, numberStr := range column {
+					number, err := strconv.Atoi(numberStr)
+					if err != nil {
+						panic(err)
+					}
+					if character == '+' {
+						sum += number
+					}
+					if character == '*' {
+						product *= number
+					}
+				}
+				if character == '+' {
+					result += sum
+				}
+				if character == '*' {
+					result += product
+				}
+				column = []string{}
+			} else if character != ' ' {
+				temp += string(character)
+			}
+		}
+		if temp != "" {
+			column = append(column, temp)
+		}
+	}
+	return result
 }
 
 func main() {

@@ -5,7 +5,7 @@ import "testing"
 const testInput = `123 328  51 64 
  45 64  387 23 
   6 98  215 314
-*   +   *   +`
+*   +   *   +  `
 
 func TestPart1(t *testing.T) {
 	result := part1(testInput)
@@ -17,7 +17,7 @@ func TestPart1(t *testing.T) {
 
 func TestPart2(t *testing.T) {
 	result := part2(testInput)
-	expected := 0
+	expected := 3263827
 	if result != expected {
 		t.Errorf("Part 2: expected %d, got %d", expected, result)
 	}
